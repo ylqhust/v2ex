@@ -1,89 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
 <RelativeLayout
-
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingRight="16dp"
     android:paddingLeft="16dp"
     android:paddingTop="8dp">
-<TextView
-    android:id="@+id/article_tag_container"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_toLeftOf="@+id/user_image"
-    android:layout_marginRight="8dp"
-    android:textSize="10sp">
-</TextView>
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/article_tag_container"
-        android:layout_marginTop="8dp"
-        android:textSize="14sp"
-        android:gravity="center|left"
-        android:layout_toLeftOf="@+id/user_image"
-        android:layout_marginRight="8dp"
-        />
-    <ImageView
-        android:id="@+id/user_image"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_alignParentRight="true"
-        android:src="@drawable/ic_warning_black_24dp"
-        />
-    <TextView
-        android:id="@+id/article_base_info"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/title"
-        android:layout_toLeftOf="@+id/user_image"
-        android:layout_alignRight="@+id/title"
-        android:layout_marginTop="8dp"
-        android:textSize="10sp"/>
-
-    <View
-        android:id="@+id/line1"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
-        android:layout_below="@+id/user_image"
-        android:layout_marginTop="8dp"/>
-
-    <TextView
-        android:id="@+id/article_content"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/line1"
-        android:layout_marginTop="16dp"
-        android:text="内容"
-        android:textSize="12sp"
-        />
-    <View
-        android:id="@+id/line2"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
-        android:layout_below="@+id/article_content"
-        android:layout_marginTop="8dp"/>
-    <TextView
-        android:id="@+id/reply_base_info"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/line2"
-        android:layout_marginTop="8dp"
-        android:textSize="10sp" />
     <ListView
-        android:id="@+id/reply_content_container"
+        android:id="@+id/article_content_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/reply_base_info"
         android:layout_marginTop="16dp">
     </ListView>
 </RelativeLayout>
-</ScrollView>
