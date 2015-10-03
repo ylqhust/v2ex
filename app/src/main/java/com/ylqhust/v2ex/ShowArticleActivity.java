@@ -1,5 +1,6 @@
 package com.ylqhust.v2ex;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,14 +22,27 @@ public class ShowArticleActivity extends AppCompatActivity implements ResolveOne
 
 
     private ListView listView;
-
+    private String url;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.article_content);
         initView();
         Intent intent = getIntent();
-        String url = intent.getStringExtra("URL");
+        url = intent.getStringExtra("URL");
+        initGlobal();
+        initArticleContent();
+    }
+
+    private void initGlobal()
+    {
+        Global.progressDialogSpinner2 = new ProgressDialog(this);
+        Global.progressDialogSpinner2.setTitle("提示信息");
+        Global.progressDialogSpinner2.setMessage("正在获取数据...");
+        Global.progressDialogSpinner2.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+    }
+
+    private void initArticleContent() {
         ResolveOneArticle resolveOneArticle = new ResolveOneArticle(url,null);
         resolveOneArticle.setUpdateUI(this);
         resolveOneArticle.resolve();
@@ -54,7 +68,8 @@ public class ShowArticleActivity extends AppCompatActivity implements ResolveOne
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_refresh) {
+            initArticleContent();
             return true;
         }
 
@@ -67,7 +82,7 @@ public class ShowArticleActivity extends AppCompatActivity implements ResolveOne
         if (articleInfo == null)
         {
             //没有缓存也没有网络
-            Toast.makeText(this,"获取失败",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"无法获取主题...",Toast.LENGTH_SHORT).show();
             return;
         }
         //设置数据

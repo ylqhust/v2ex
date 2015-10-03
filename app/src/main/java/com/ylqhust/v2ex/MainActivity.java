@@ -44,7 +44,8 @@ public class MainActivity extends AppCompatActivity implements AutoComplete.Auto
     private ViewPager viewpager;
     private EditText search_edittext;
     private ImageView search_image;
-
+    private List<View> lists;
+    private LayoutInflater inflater;
     final private FragmentManager fm = getSupportFragmentManager();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +55,8 @@ public class MainActivity extends AppCompatActivity implements AutoComplete.Auto
         initGlobal();
 
         viewpager = (ViewPager) findViewById(R.id.viewpager);
-        final LayoutInflater inflater = getLayoutInflater().from(this);
-        final List<View> lists = new ArrayList<View>();
+        inflater = getLayoutInflater().from(this);
+        lists = new ArrayList<View>();
         View latestView = inflater.inflate(R.layout.latest_layout,null);
         View searchView = inflater.inflate(R.layout.search_layout,null);
         //获取搜索框
@@ -77,8 +78,7 @@ public class MainActivity extends AppCompatActivity implements AutoComplete.Auto
             @Override
             public void afterTextChanged(Editable s) {
                 //判断是否已选择，避免Fragment移除后又新建了一个，
-                if (Global.IfChosed)
-                {
+                if (Global.IfChosed) {
                     //重置已选择为假，为下一次选择准备
                     Global.IfChosed = false;
                     return;
@@ -90,41 +90,37 @@ public class MainActivity extends AppCompatActivity implements AutoComplete.Auto
                 AutoComplete autoComplete = new AutoComplete(advices);
                 autoComplete.setAutoCompleteText2(MainActivity.this);
                 removeAllFragment();
-                fm.beginTransaction().add(R.id.auto_complete_container,autoComplete).commit();
+                fm.beginTransaction().add(R.id.auto_complete_container, autoComplete).commit();
             }
         });
 
         //监听搜索事件
         search_image.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 //获取用户输入
                 final String input = search_edittext.getText().toString().trim();
                 Log.i("IMAGE_CLICK", input);
                 //首先根据输入尝试获得用户主页
-                    //构造url
-                String urlString = Global.SHOW_URL+input;
+                //构造url
+                String urlString = Global.SHOW_URL + input;
                 GetJSONObjectTask getJSONObjectTask = new GetJSONObjectTask();
                 getJSONObjectTask.setUpdateUI(new GetJSONObjectTask.UpdateUI() {
                     @Override
                     public void updateUI(JSONObject jsonObject) {
                         MemberScheam memberScheam = ResolveMemberJSONObject.resolve(jsonObject);
-                        if (jsonObject != null && memberScheam != null)
-                        {
+                        if (jsonObject != null && memberScheam != null) {
                             //移除所有Fragment
                             removeAllFragment();
                             //设置新的用户Fragment
                             UserPager userpager = new UserPager(memberScheam);
-                            fm.beginTransaction().add(R.id.user_pager_container,userpager).commit();
-                        }
-                        else
-                        {
+                            fm.beginTransaction().add(R.id.user_pager_container, userpager).commit();
+                        } else {
                             //移除所有Fragment
                             removeAllFragment();
                             //获取用户界面失败，尝试根据输入获取本地数据
                             LocalHistory localHistory = new LocalHistory(Global.getAdvices.FilterByInput(input));
-                            fm.beginTransaction().add(R.id.user_pager_container,localHistory).commit();
+                            fm.beginTransaction().add(R.id.user_pager_container, localHistory).commit();
                         }
                     }
                 });
@@ -138,7 +134,14 @@ public class MainActivity extends AppCompatActivity implements AutoComplete.Auto
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(lists);
         viewpager.setAdapter(viewPagerAdapter);
 
+        //初始化界面
+        initLatestTopic();
 
+
+    }
+
+    private void initLatestTopic()
+    {
         GetJSONDataTask getLatestTask = new GetJSONDataTask();
         getLatestTask.setUpdateUI(new GetJSONDataTask.UpdateUI() {
             @Override
@@ -159,10 +162,7 @@ public class MainActivity extends AppCompatActivity implements AutoComplete.Auto
             }
         });
         getLatestTask.execute("https://www.v2ex.com/api/topics/latest.json");
-
     }
-
-
 
 
     private void initGlobal()
@@ -191,7 +191,10 @@ public class MainActivity extends AppCompatActivity implements AutoComplete.Auto
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_refresh)
+        {
+            initLatestTopic();
+            //刷新内容
             return true;
         }
 

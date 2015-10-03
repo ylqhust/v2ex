@@ -14,6 +14,7 @@ public class Global {
     public static boolean IfChosed = false;
     public static GetAdvices getAdvices = null;
     public static ProgressDialog progressDialogSpinner = null;
+    public static ProgressDialog progressDialogSpinner2 = null;
     public static Activity activity = null;
     public static final String SHOW_URL = "https://www.v2ex.com/api/members/show.json?username=";
     public static final String MEMBER_URL = "http://www.v2ex.com/member/";

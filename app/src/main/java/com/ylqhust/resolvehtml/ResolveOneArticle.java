@@ -85,15 +85,39 @@ public class ResolveOneArticle implements GetHtmlTask.DoAfter
 
         Elements boxs = wrapper.getElementsByClass(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX_CLASS);
 
-        Element box1 = boxs.first();
-        Element box2 = boxs.get(1);
+        Element box1 = null;
+        Element box2 = null;
+        try{
+            box1 = boxs.first();
+            box2 = boxs.get(1);
+        }
+        catch(Exception e)
+        {
+            this.updateUI.updateUI(null);
+            return;
+        }
+        if (box1 == null || box2 == null)
+        {
+            this.updateUI.updateUI(null);
+            return;
+        }
 
         Element head = box1.getElementsByClass(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_CLASS).first();
         Element head_fr = head.getElementsByClass(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_FR_CLASS).first();
-        Element head_fr_avatar = head_fr.getElementsByClass(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_FR_AVATAR_CLASS).first();
+        //发帖人头像
+        String src = null;
+        if (head_fr == null)
+        {
+            //表示无法获取主题
+            this.updateUI.updateUI(null);
+            return;
+        }
 
-        //发帖人头像图片
-        String src = "http:"+head_fr_avatar.attr(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_FR_AVATAR_SRC_ATTR);
+        else
+        {
+            Element head_fr_avatar = head_fr.getElementsByClass(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_FR_AVATAR_CLASS).first();
+            src =  "http:"+head_fr_avatar.attr(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_FR_AVATAR_SRC_ATTR);
+        }
         articleInfo.setAuthor_image(src);
 
         //帖子分类
@@ -103,11 +127,27 @@ public class ResolveOneArticle implements GetHtmlTask.DoAfter
                 lists.add(element.text());
         articleInfo.setArticle_class(lists);
         //帖子标题
-        String title = head.getElementsByTag(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_H1_TAG).first().text();
+        String title = null;
+        if (head.getElementsByTag(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_H1_TAG).first() == null)
+        {
+            title = "NULL";
+        }
+        else
+        {
+            title = head.getElementsByTag(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_H1_TAG).first().text();
+        }
         articleInfo.setTitle(title);
 
         //帖子信息
-        String head_gray = head.getElementsByClass(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_GRAY_CALSS).first().text();
+        String head_gray = null;
+        if (head.getElementsByClass(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_GRAY_CALSS).first() == null)
+        {
+            head_gray = "NULL";
+        }
+        else
+        {
+            head_gray = head.getElementsByClass(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_GRAY_CALSS).first().text();
+        }
         articleInfo.setInfo(head_gray);
 
         //帖子内容

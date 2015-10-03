@@ -28,6 +28,7 @@ public class GetHtmlTask extends AsyncTask<String,Integer,String> {
     @Override
     protected void onPreExecute()
     {
+        Global.progressDialogSpinner2.show();
     }
     private String readInputStream(InputStream instream) throws Exception
     {
@@ -70,6 +71,7 @@ public class GetHtmlTask extends AsyncTask<String,Integer,String> {
     @Override
     protected void onPostExecute(String result)
     {
+        Global.progressDialogSpinner2.dismiss();
         if (result == null)
         {
             //获取本地缓存
