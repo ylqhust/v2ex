@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements AutoComplete.Auto
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        
         initGlobal();
 
         viewpager = (ViewPager) findViewById(R.id.viewpager);

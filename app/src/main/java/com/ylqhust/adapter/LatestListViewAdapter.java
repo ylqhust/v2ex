@@ -101,6 +101,7 @@ public class LatestListViewAdapter extends BaseAdapter implements View.OnClickLi
             case R.id.title:
                 int position2 = Integer.valueOf(v.getContentDescription().toString());
                 String url = lists.get(position2).getUrl();
+                //String url = "http://www.v2ex.com/t/225506";
                 String contentWithImage = lists.get(position2).getContent();
                 Intent intent = new Intent();
                 intent.setClass(Global.activity, ShowArticleActivity.class);

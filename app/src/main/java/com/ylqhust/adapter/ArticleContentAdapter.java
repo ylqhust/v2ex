@@ -128,13 +128,12 @@ public class ArticleContentAdapter extends BaseAdapter {
         for(int i=0;i<PlainText.size();i++)
         {
             String text = PlainText.get(i);
-            if (!"".equals(text))
+            if (!IncludeTrashContent(text))
             {
                 TextView textView = (TextView) inflater.inflate(R.layout.article_content_plaintext,null);
                 textView.setText(text);
                 article_content.addView(textView);
             }
-            System.out.println("I="+i+"\nImg size="+Img.size());
             if(i != Img.size())
             {
                 System.out.println(Img.get(i));
@@ -152,6 +151,14 @@ public class ArticleContentAdapter extends BaseAdapter {
         }
     }
 
+    //检测是否包含垃圾内容
+    private boolean IncludeTrashContent(String text)
+    {
+        if("".equals(text))
+            return true;
+        return false;
+    }
+
 
     //获得内容中的图片连接,将内容分割成文本内容和图片链接
     private void SplitContent(String content)
@@ -159,11 +166,14 @@ public class ArticleContentAdapter extends BaseAdapter {
         List<String> imgUrl = new ArrayList<String>();
         List<String> contents = new ArrayList<String>();
         List<String> finalImgUrl = new ArrayList<String>();
-        String regx = "((http:)|(https:))*[0-9a-zA-Z_\\-/\\.,&=]*\\.((png)|(jpeg)|(bmp)|(tga)|(svg)|(psd)|(jpg))";
+        String regx = "!\\[.*\\]\\( (((http:)|(https:))*[0-9a-zA-Z_\\-/\\.,&=]*\\.((png)|(jpeg)|(bmp)|(tga)|(svg)|(psd)|(jpg)))\\)";
+        //String regx = "((http:)|(https:))*[0-9a-zA-Z_\\-/\\.,&=]*\\.((png)|(jpeg)|(bmp)|(tga)|(svg)|(psd)|(jpg))";
+        //用于获取图片
         Pattern pattern  = Pattern.compile(regx);
         Matcher matcher = pattern.matcher(content);
         while(matcher.find())
         {
+            //String string = matcher.group();
             imgUrl.add(matcher.group());
         }
         //分割content成为两部分
@@ -176,9 +186,14 @@ public class ArticleContentAdapter extends BaseAdapter {
         //将最后一部分文本添加进来，可能为空，但没关系
         contents.add(content);
 
-        //将http添加到图片链接，因为有的图片可能没有这个头
+        //将http添加到图片链接，并去掉![]( ),因为有的图片可能没有这个头
+        String regx2 = "((http:)|(https:))*[0-9a-zA-Z_\\-/\\.,&=]*\\.((png)|(jpeg)|(bmp)|(tga)|(svg)|(psd)|(jpg))";
         for (String img : imgUrl)
         {
+            Pattern patterns = Pattern.compile(regx2);
+            Matcher matchers = patterns.matcher(img);
+            if (matchers.find())
+                img = matchers.group();
             if (!img.contains("http:"))
                     img = "http:"+img;
             finalImgUrl.add(img);
