@@ -60,14 +60,15 @@ public class LatestListViewAdapter extends BaseAdapter implements View.OnClickLi
         TextView replies = (TextView) view.findViewById(R.id.replies);
 
         LatestScheam latestScheam = lists.get(position);
-        String user_head_url_mini = latestScheam.getUser_head_image_mini_url();
-        if (ImageUtils.cancelPotentialWork(user_head_url_mini,
+        //String user_head_url_mini = latestScheam.getUser_head_image_mini_url();
+        String user_head_url_large = latestScheam.getUser_head_image_large_url();
+        if (ImageUtils.cancelPotentialWork(user_head_url_large,
                 user_head))
         {
             final DownloadImageTask downloadImageTask = new DownloadImageTask(user_head);
             final AsyncDrawable asyncDrawable  = new AsyncDrawable(null,null,downloadImageTask);
             user_head.setImageDrawable(asyncDrawable);
-            downloadImageTask.execute(user_head_url_mini,"50","50");
+            downloadImageTask.execute(user_head_url_large,"100","100");
         }
         //设置点击事件
         user_head.setOnClickListener(this);
@@ -100,9 +101,11 @@ public class LatestListViewAdapter extends BaseAdapter implements View.OnClickLi
             case R.id.title:
                 int position2 = Integer.valueOf(v.getContentDescription().toString());
                 String url = lists.get(position2).getUrl();
+                String contentWithImage = lists.get(position2).getContent();
                 Intent intent = new Intent();
                 intent.setClass(Global.activity, ShowArticleActivity.class);
                 intent.putExtra("URL", url);
+                intent.putExtra("contentWithImage",contentWithImage);
                 Global.activity.startActivity(intent);
                 break;
         }

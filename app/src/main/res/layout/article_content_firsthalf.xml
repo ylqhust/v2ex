@@ -52,14 +52,13 @@
         android:layout_below="@+id/article_base_info"
         android:layout_marginTop="16dp"/>
 
-    <TextView
+    <LinearLayout
         android:id="@+id/article_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/line1"
         android:layout_marginTop="16dp"
-        android:text="内容"
-        android:textSize="12sp"
+        android:orientation="vertical"
         />
     <View
         android:id="@+id/line2"

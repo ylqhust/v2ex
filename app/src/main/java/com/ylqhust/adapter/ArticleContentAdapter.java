@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -16,7 +17,10 @@ import com.ylqhust.utils.ImageUtils;
 import com.ylqhust.v2ex.R;
 
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by apple on 15/10/1.
@@ -25,6 +29,12 @@ public class ArticleContentAdapter extends BaseAdapter {
     private ArticleInfo articleInfo;
     private List<ReplyInfo> replyInfos;
     private LayoutInflater inflater;
+
+    //帖子中的纯文本
+    private List<String> PlainText = null;
+    //帖子中的图片
+    private List<String> Img = null;
+
     public ArticleContentAdapter(ArticleInfo articleInfo, LayoutInflater inflater) {
         this.inflater = inflater;
         this.articleInfo = articleInfo;
@@ -53,19 +63,22 @@ public class ArticleContentAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         if(position == 0)
         {
+            SplitContent(articleInfo.getContent());
             //返回帖子的view
             View view = inflater.inflate(R.layout.article_content_firsthalf,null);
             TextView article_tag_container = (TextView) view.findViewById(R.id.article_tag_container);
             ImageView user_image = (ImageView) view.findViewById(R.id.user_image);
             TextView title = (TextView) view.findViewById(R.id.title);
-            TextView article_content = (TextView) view.findViewById(R.id.article_content);
+            //帖子文本内容和图片资源的容器
+            LinearLayout article_content = (LinearLayout) view.findViewById(R.id.article_content);
+
             TextView article_base_info = (TextView) view.findViewById(R.id.article_base_info);
             TextView reply_base_info = (TextView) view.findViewById(R.id.reply_base_info);
 
             article_tag_container.setText(articleInfo.getArticle_Tag());
             title.setText(articleInfo.getTitle());
             article_base_info.setText(articleInfo.getInfo());
-            article_content.setText(articleInfo.getContent());
+            setArticleTextAndImage(article_content);
             reply_base_info.setText(articleInfo.getReply_base_info());
             String image_url = articleInfo.getAuthor_image();
             if (ImageUtils.cancelPotentialWork(image_url,user_image))
@@ -75,6 +88,8 @@ public class ArticleContentAdapter extends BaseAdapter {
                 user_image.setImageDrawable(asyncDrawable);
                 downloadImageTask.execute(image_url,"100","100");//100,100代表尺寸
             }
+
+
             return view;
         }
         else
@@ -105,5 +120,71 @@ public class ArticleContentAdapter extends BaseAdapter {
             }
             return view;
         }
+    }
+
+    //使用PlainText和Img中的数据构造好LinearLayout容器
+    private void setArticleTextAndImage(LinearLayout article_content)
+    {
+        for(int i=0;i<PlainText.size();i++)
+        {
+            String text = PlainText.get(i);
+            if (!"".equals(text))
+            {
+                TextView textView = (TextView) inflater.inflate(R.layout.article_content_plaintext,null);
+                textView.setText(text);
+                article_content.addView(textView);
+            }
+            System.out.println("I="+i+"\nImg size="+Img.size());
+            if(i != Img.size())
+            {
+                System.out.println(Img.get(i));
+                ImageView imageView = (ImageView) inflater.inflate(R.layout.article_content_img,null);
+                String image_url = Img.get(i);
+                if (ImageUtils.cancelPotentialWork(image_url,imageView))
+                {
+                    DownloadImageTask downloadImageTask = new DownloadImageTask(imageView);
+                    AsyncDrawable asyncDrawable = new AsyncDrawable(null,null,downloadImageTask);
+                    imageView.setImageDrawable(asyncDrawable);
+                    downloadImageTask.execute(image_url,"500","500");
+                }
+                article_content.addView(imageView);
+            }
+        }
+    }
+
+
+    //获得内容中的图片连接,将内容分割成文本内容和图片链接
+    private void SplitContent(String content)
+    {
+        List<String> imgUrl = new ArrayList<String>();
+        List<String> contents = new ArrayList<String>();
+        List<String> finalImgUrl = new ArrayList<String>();
+        String regx = "((http:)|(https:))*[0-9a-zA-Z_\\-/\\.,&=]*\\.((png)|(jpeg)|(bmp)|(tga)|(svg)|(psd)|(jpg))";
+        Pattern pattern  = Pattern.compile(regx);
+        Matcher matcher = pattern.matcher(content);
+        while(matcher.find())
+        {
+            imgUrl.add(matcher.group());
+        }
+        //分割content成为两部分
+        for(String img : imgUrl)
+        {
+            int index = content.indexOf(img);
+            contents.add(content.substring(0,index));
+            content = content.substring(index+img.length());
+        }
+        //将最后一部分文本添加进来，可能为空，但没关系
+        contents.add(content);
+
+        //将http添加到图片链接，因为有的图片可能没有这个头
+        for (String img : imgUrl)
+        {
+            if (!img.contains("http:"))
+                    img = "http:"+img;
+            finalImgUrl.add(img);
+        }
+
+        PlainText = contents;
+        Img = finalImgUrl;
     }
 }

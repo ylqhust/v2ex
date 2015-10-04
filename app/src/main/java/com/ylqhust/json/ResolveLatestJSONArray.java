@@ -1,5 +1,7 @@
 package com.ylqhust.json;
 
+import android.util.Log;
+
 import com.ylqhust.contract.LatestScheam;
 
 import org.json.JSONArray;

@@ -1,5 +1,7 @@
 package com.ylqhust.resolvehtml;
 
+import android.util.Log;
+
 import com.ylqhust.contract.ArticleAndRepliesScheam;
 import com.ylqhust.contract.ArticleInfo;
 import com.ylqhust.contract.ReplyInfo;
@@ -16,6 +18,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by apple on 15/10/1.
@@ -256,6 +260,7 @@ public class ResolveOneArticle implements GetHtmlTask.DoAfter
         replyInfo.setReply_number(no);
         return replyInfo;
     }
+
 
     @Override
     public void doAfter(String htmlString)

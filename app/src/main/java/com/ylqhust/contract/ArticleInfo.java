@@ -1,6 +1,7 @@
 package com.ylqhust.contract;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by apple on 15/10/1.
@@ -17,11 +18,13 @@ public class ArticleInfo {
     private String info;
     //帖子内容
     private String content;
+
     //回帖的基本信息
     private String reply_base_info = "暂时没有回复";
 
     //帖子回复信息
     private List<ReplyInfo> replyInfos = null;
+
 
     public List<String> getArticle_class() {
         return article_class;

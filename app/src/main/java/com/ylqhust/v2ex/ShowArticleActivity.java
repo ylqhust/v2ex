@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -23,6 +24,7 @@ public class ShowArticleActivity extends AppCompatActivity implements ResolveOne
 
     private ListView listView;
     private String url;
+    private String contentWithImage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +32,7 @@ public class ShowArticleActivity extends AppCompatActivity implements ResolveOne
         initView();
         Intent intent = getIntent();
         url = intent.getStringExtra("URL");
+        contentWithImage = intent.getStringExtra("contentWithImage");
         initGlobal();
         initArticleContent();
     }
@@ -86,6 +89,7 @@ public class ShowArticleActivity extends AppCompatActivity implements ResolveOne
             return;
         }
         //设置数据
+        articleInfo.setContent(contentWithImage);
         ArticleContentAdapter replyContentAdapter = new ArticleContentAdapter(articleInfo,getLayoutInflater());
         listView.setAdapter(replyContentAdapter);
     }
