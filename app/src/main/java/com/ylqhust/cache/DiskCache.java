@@ -100,9 +100,12 @@ public class DiskCache {
     {
         HashMap<String,File> hashMap = new HashMap<String,File>();
 
-        for (File file : allFiles)
+        if (allFiles != null)
         {
-            hashMap.put(file.getName(),file);
+            for (File file : allFiles)
+            {
+                hashMap.put(file.getName(),file);
+            }
         }
         return hashMap;
     }
