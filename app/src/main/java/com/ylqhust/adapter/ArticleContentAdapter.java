@@ -144,7 +144,7 @@ public class ArticleContentAdapter extends BaseAdapter {
                     DownloadImageTask downloadImageTask = new DownloadImageTask(imageView);
                     AsyncDrawable asyncDrawable = new AsyncDrawable(null,null,downloadImageTask);
                     imageView.setImageDrawable(asyncDrawable);
-                    downloadImageTask.execute(image_url,"500","500");
+                    downloadImageTask.execute(image_url,"500","800");
                 }
                 article_content.addView(imageView);
             }
@@ -166,7 +166,7 @@ public class ArticleContentAdapter extends BaseAdapter {
         List<String> imgUrl = new ArrayList<String>();
         List<String> contents = new ArrayList<String>();
         List<String> finalImgUrl = new ArrayList<String>();
-        String regx = "!\\[.*\\]\\( (((http:)|(https:))*[0-9a-zA-Z_\\-/\\.,&=]*\\.((png)|(jpeg)|(bmp)|(tga)|(svg)|(psd)|(jpg)))\\)";
+        String regx = "(!\\[.*\\]\\( )*(((http:)|(https:))*[0-9a-zA-Z_\\-/\\.,&=]*\\.((png)|(jpeg)|(bmp)|(tga)|(svg)|(psd)|(jpg)))(\\))*";
         //String regx = "((http:)|(https:))*[0-9a-zA-Z_\\-/\\.,&=]*\\.((png)|(jpeg)|(bmp)|(tga)|(svg)|(psd)|(jpg))";
         //用于获取图片
         Pattern pattern  = Pattern.compile(regx);
