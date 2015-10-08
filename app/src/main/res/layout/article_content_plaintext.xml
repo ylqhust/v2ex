@@ -7,4 +7,5 @@
     android:textSize="12sp"
     android:text="text"
     android:layout_marginTop="8dp"
+    android:autoLink="email|map|web"
     />

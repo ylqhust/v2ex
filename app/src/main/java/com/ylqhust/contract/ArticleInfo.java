@@ -15,7 +15,7 @@ public class ArticleInfo {
     //帖子标题
     private String title;
     //帖子创建信息
-    private String info;
+    private String info = "";
     //帖子内容
     private String content;
 

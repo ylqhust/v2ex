@@ -42,7 +42,8 @@
         android:layout_marginTop="8dp"
         android:text="reply_content"
         android:textColor="@android:color/background_dark"
-        android:layout_toLeftOf="@+id/no"/>
+        android:layout_toLeftOf="@+id/no"
+        android:autoLink="web|email"/>
     <TextView
         android:id="@+id/no"
         android:layout_width="wrap_content"

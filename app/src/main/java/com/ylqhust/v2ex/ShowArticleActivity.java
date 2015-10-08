@@ -25,6 +25,8 @@ public class ShowArticleActivity extends AppCompatActivity implements ResolveOne
     private ListView listView;
     private String url;
     private String contentWithImage;
+    private String head_image_url;
+    private String title_;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +35,8 @@ public class ShowArticleActivity extends AppCompatActivity implements ResolveOne
         Intent intent = getIntent();
         url = intent.getStringExtra("URL");
         contentWithImage = intent.getStringExtra("contentWithImage");
+        head_image_url = intent.getStringExtra("head_image_url");
+        title_ = intent.getStringExtra("title");
         initGlobal();
         initArticleContent();
     }
@@ -86,6 +90,13 @@ public class ShowArticleActivity extends AppCompatActivity implements ResolveOne
         {
             //没有缓存也没有网络
             Toast.makeText(this,"无法获取主题...",Toast.LENGTH_SHORT).show();
+            //使用contentWithImage和title和headImageUrl构造一个
+            ArticleInfo tmp = new ArticleInfo();
+            tmp.setContent(contentWithImage);
+            tmp.setAuthor_image(head_image_url);
+            tmp.setTitle(title_);
+            ArticleContentAdapter tmpadapter = new ArticleContentAdapter(tmp,getLayoutInflater());
+            listView.setAdapter(tmpadapter);
             return;
         }
         //设置数据

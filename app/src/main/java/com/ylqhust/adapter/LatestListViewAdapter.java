@@ -107,6 +107,8 @@ public class LatestListViewAdapter extends BaseAdapter implements View.OnClickLi
                 intent.setClass(Global.activity, ShowArticleActivity.class);
                 intent.putExtra("URL", url);
                 intent.putExtra("contentWithImage",contentWithImage);
+                intent.putExtra("title",lists.get(position2).getTitle());
+                intent.putExtra("head_image_url",lists.get(position2).getUser_head_image_large_url());
                 Global.activity.startActivity(intent);
                 break;
         }

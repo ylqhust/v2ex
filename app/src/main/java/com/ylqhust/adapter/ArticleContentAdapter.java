@@ -63,7 +63,10 @@ public class ArticleContentAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         if(position == 0)
         {
+            //将content分割成文本和图片链接
             SplitContent(articleInfo.getContent());
+            //将文本中的非图片链接找到并添加点击事件
+
             //返回帖子的view
             View view = inflater.inflate(R.layout.article_content_firsthalf,null);
             TextView article_tag_container = (TextView) view.findViewById(R.id.article_tag_container);
