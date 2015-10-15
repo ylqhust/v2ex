@@ -1,6 +1,7 @@
 package com.ylqhust.v2ex;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,16 +15,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.ylqhust.adapter.LatestListViewAdapter;
 import com.ylqhust.adapter.ViewPagerAdapter;
+import com.ylqhust.api.V2EX;
 import com.ylqhust.cache.DiskCache;
 import com.ylqhust.contract.MemberScheam;
+import com.ylqhust.fragment.Account;
 import com.ylqhust.fragment.AutoComplete;
 import com.ylqhust.fragment.LocalHistory;
+import com.ylqhust.fragment.Login;
 import com.ylqhust.fragment.UserPager;
 import com.ylqhust.json.GetJSONDataTask;
 import com.ylqhust.contract.LatestScheam;
@@ -40,7 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements AutoComplete.AutoCompleteText2{
+public class MainActivity extends AppCompatActivity implements AutoComplete.AutoCompleteText2,ViewPagerAdapter.SetUserPage{
     private ViewPager viewpager;
     private EditText search_edittext;
     private ImageView search_image;
@@ -59,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements AutoComplete.Auto
         lists = new ArrayList<View>();
         View latestView = inflater.inflate(R.layout.latest_layout,null);
         View searchView = inflater.inflate(R.layout.search_layout,null);
+        View userView = inflater.inflate(R.layout.fragment_user,null);
+
         //获取搜索框
         search_edittext = (EditText) searchView.findViewById(R.id.search_edit);
         //获取搜索按钮
@@ -130,8 +137,10 @@ public class MainActivity extends AppCompatActivity implements AutoComplete.Auto
         //添加view到lists
         lists.add(latestView);
         lists.add(searchView);
+        lists.add(userView);
         //设置ViewPager的适配器
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(lists);
+        viewPagerAdapter.setSetUserPage(this);
         viewpager.setAdapter(viewPagerAdapter);
 
         //初始化界面
@@ -140,22 +149,23 @@ public class MainActivity extends AppCompatActivity implements AutoComplete.Auto
 
     }
 
+
+
     private void initLatestTopic()
     {
         GetJSONDataTask getLatestTask = new GetJSONDataTask();
         getLatestTask.setUpdateUI(new GetJSONDataTask.UpdateUI() {
             @Override
             public void updateUI(JSONArray jsonArray) {
-                if (jsonArray == null)
-                {
-                    Toast.makeText(getApplicationContext(),"检查网络",Toast.LENGTH_SHORT).show();
+                if (jsonArray == null) {
+                    Toast.makeText(getApplicationContext(), "检查网络", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 try {
                     List<LatestScheam> latestScheamLists = ResolveLatestJSONArray.resolve(jsonArray);
                     Global.getAdvices.setLatestScheams(latestScheamLists);
                     LatestListViewAdapter latestListViewAdapter = new LatestListViewAdapter(inflater, latestScheamLists);
-                    ((ListView)(lists.get(0).findViewById(R.id.listView))).setAdapter(latestListViewAdapter);
+                    ((ListView) (lists.get(0).findViewById(R.id.listView))).setAdapter(latestListViewAdapter);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -174,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements AutoComplete.Auto
         Global.progressDialogSpinner.setTitle("提示信息");
         Global.progressDialogSpinner.setMessage("正在获取数据...");
         Global.progressDialogSpinner.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        Global.v2EXManager = new V2EX(this);
     }
 
     @Override
@@ -191,13 +202,12 @@ public class MainActivity extends AppCompatActivity implements AutoComplete.Auto
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_refresh)
+        switch(id)
         {
-            initLatestTopic();
-            //刷新内容
-            return true;
+            case R.id.action_refresh:
+                initLatestTopic();
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -226,5 +236,28 @@ public class MainActivity extends AppCompatActivity implements AutoComplete.Auto
             fm.beginTransaction().remove(fragment1).commit();
         if (fragment2 != null)
             fm.beginTransaction().remove(fragment2).commit();
+    }
+
+
+    @Override
+    public void setUserPage(String string) {
+        if (Global.isLogin && string != null)
+        {
+            Fragment existFragment = fm.findFragmentById(R.id.fragment_user_container);
+            if (existFragment != null)
+                fm.beginTransaction().remove(existFragment).commit();
+            Account account = new Account(string);
+            account.setSetUserPage(this);
+            fm.beginTransaction().add(R.id.fragment_user_container,account).commit();
+        }
+        else
+        {
+            Fragment existFragment = fm.findFragmentById(R.id.fragment_user_container);
+            if (existFragment != null)
+                fm.beginTransaction().remove(existFragment).commit();
+            Login login = new Login();
+            login.setSetUserPage(this);
+            fm.beginTransaction().add(R.id.fragment_user_container,login).commit();
+        }
     }
 }

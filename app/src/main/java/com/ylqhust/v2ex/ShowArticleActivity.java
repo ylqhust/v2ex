@@ -2,11 +2,13 @@ package com.ylqhust.v2ex;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -27,6 +29,7 @@ public class ShowArticleActivity extends AppCompatActivity implements ResolveOne
     private String contentWithImage;
     private String head_image_url;
     private String title_;
+    private FloatingActionButton button_reply;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +61,12 @@ public class ShowArticleActivity extends AppCompatActivity implements ResolveOne
     private void initView() {
 
         listView = (ListView) findViewById(R.id.article_content_container);
+        button_reply = (FloatingActionButton) findViewById(R.id.article_content_floatbutton_reply);
+        if (!Global.isLogin)
+        {
+            button_reply.setVisibility(View.GONE);
+            button_reply.setClickable(false);
+        }
     }
 
     @Override
