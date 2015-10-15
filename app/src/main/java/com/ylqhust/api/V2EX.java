@@ -1,20 +1,25 @@
 package com.ylqhust.api;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.HttpGet;
 import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.ylqhust.v2ex.Global;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.HttpResponse;
+import cz.msebera.android.httpclient.client.HttpClient;
+import cz.msebera.android.httpclient.impl.client.HttpClients;
 
 /**
  * Created by apple on 15/10/12.
@@ -28,7 +33,6 @@ public class V2EX {
     private Context context;
     private UpdateUserPage updateUserPage;
 
-    final ProgressDialog customDialog = Global.getCustomDialog1("正在登陆...");
     public static void Replay(String content)
     {
     }
@@ -44,7 +48,8 @@ public class V2EX {
     }
 
         public void LoginBefore(final String username, final String password) {
-            customDialog.show();
+            Global.progressDialogSpinner.setMessage("正在登陆...");
+            Global.progressDialogSpinner.show();
             AsyncHttpClient client = getClient();
             client.get(LOGIN_URL, new AsyncHttpResponseHandler() {
                 @Override
@@ -62,28 +67,35 @@ public class V2EX {
 
         }
 
+
         private void LoginProgress(String username,String password,String once) {
             AsyncHttpClient client = getClient();
             client.addHeader("Referer", LOGIN_URL);
             RequestParams params = new RequestParams();
             params.put("u",username);
             params.put("p",password);
-            params.put("next","/");
+            params.put("next", "/");
             params.put("once", once);
             client.post(LOGIN_URL, params, new TextHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     if (statusCode == 302) {
-                        System.out.println("302Success");
-                        getUserInfo();
+                        onSuccess(statusCode, headers, responseString);
+                    } else {
+                        //do nothing
+                        Global.progressDialogSpinner.dismiss();
+                        updateUserPage.UUP(null);
                     }
 
                 }
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    System.out.println("200Success");
-                    getUserInfo();
+                    if (statusCode == 200) {
+                        onFailure(statusCode, headers, responseString, null);
+                    } else {
+                        getUserInfo();
+                    }
                 }
             });
         }
@@ -100,13 +112,12 @@ public class V2EX {
 
     private void getUserInfo()
     {
-        customDialog.setMessage("正在获取信息...");
+        Global.progressDialogSpinner.setMessage("正在获取信息...");
         AsyncHttpClient client = getClient();
         client.get(MISSION_URL, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Global.ResetDialog1();
-                customDialog.dismiss();
+                Global.progressDialogSpinner.dismiss();
                 try {
                     updateUserPage.UUP(new String(responseBody,"UTF-8"));
                 } catch (UnsupportedEncodingException e) {
@@ -119,14 +130,53 @@ public class V2EX {
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 if (statusCode == 302)
                 {
-                    Global.ResetDialog1();
-                    customDialog.dismiss();
+                    Global.progressDialogSpinner.dismiss();
                     try {
                         updateUserPage.UUP(new String(responseBody,"UTF-8"));
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
                 }
+            }
+        });
+    }
+
+    public void LoginSilence(final String username,final String password)
+    {
+        final AsyncHttpClient client = getClient();
+        client.get(LOGIN_URL, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                String once = getOnce(responseString);
+                AsyncHttpClient client1 = getClient();
+                client1.addHeader("Referer",LOGIN_URL);
+                RequestParams params = new RequestParams();
+                params.put("u",username);
+                params.put("p",password);
+                params.put("next","/");
+                params.put("once",once);
+                client1.post(LOGIN_URL, params, new AsyncHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                        if (statusCode == 200)
+                            onFailure(statusCode,headers,responseBody,null);
+                        else
+                            Global.isLogin = true;
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                        if (statusCode == 302)
+                            onSuccess(statusCode,headers,responseBody);
+                        else
+                            Global.isLogin = false;
+                    }
+                });
             }
         });
     }
@@ -156,5 +206,72 @@ public class V2EX {
     }
     public interface UpdateUserPage{
         public void UUP(String string);
+    }
+
+    public boolean Reply(final String url,final String content,final TextHttpResponseHandler handler)
+    {
+        AsyncHttpClient client = getClient();
+        client.get(url, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                System.out.println("ONFAILED");
+                if (statusCode == 302)
+                    onSuccess(statusCode, headers, responseString);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                String reply_once = getOnce(responseString);
+                reply(url,content,reply_once,handler);
+            }
+        });
+
+        return true;
+    }
+
+    private void reply(String url,String content,String reply_once, final TextHttpResponseHandler handler)
+    {
+        AsyncHttpClient client = getClient();
+        if (reply_once == null)
+            return;
+        System.out.println("ONCE:"+reply_once);
+        System.out.println("url"+url);
+        client.addHeader("Referer", url);
+        RequestParams params = new RequestParams();
+        params.put("content",content);
+        params.put("once", reply_once);
+
+        client.post(url, params, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                if (statusCode == 200) {
+                    onFailure(statusCode, headers, responseBody, null);
+                    return;
+                } else {
+                    handler.onSuccess(statusCode, headers, responseBody);
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                if (statusCode == 302)
+                    onSuccess(statusCode, headers, responseBody);
+                else {
+                    handler.onFailure(statusCode, headers, responseBody, null);
+                }
+            }
+        });
+    }
+
+    public InputStream getHtmlString(String url) throws IOException {
+        HttpClient client = HttpClients.createDefault();
+        HttpGet get = new HttpGet(url);
+        get.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+        get.addHeader("Accept-Encoding","gzip, deflate");
+        get.addHeader("Accept-Language", "en-US,en;q=0.5");
+        get.addHeader("Host", "www.v2ex.com");
+        get.addHeader("User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:40.0) Gecko/20100101 Firefox/40.0");
+        HttpResponse response = client.execute(get);
+        return response.getEntity().getContent();
     }
 }

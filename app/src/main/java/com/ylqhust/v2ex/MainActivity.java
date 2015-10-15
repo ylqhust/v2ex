@@ -185,6 +185,7 @@ public class MainActivity extends AppCompatActivity implements AutoComplete.Auto
         Global.progressDialogSpinner.setMessage("正在获取数据...");
         Global.progressDialogSpinner.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         Global.v2EXManager = new V2EX(this);
+        Global.AutoLogin();
     }
 
     @Override

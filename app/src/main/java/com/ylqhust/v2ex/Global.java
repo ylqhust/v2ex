@@ -2,6 +2,8 @@ package com.ylqhust.v2ex;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.ylqhust.api.V2EX;
 import com.ylqhust.cache.DiskCache;
@@ -22,18 +24,33 @@ public class Global {
 
     public static boolean isLogin = false;
 
-    public static ProgressDialog getCustomDialog1(String message)
-    {
-        progressDialogSpinner.setMessage(message);
-        return progressDialogSpinner;
-    }
-
-    public static void ResetDialog1()
-    {
-        progressDialogSpinner.setMessage("正在获取数据...");
-        return;
-    }
-
     public static V2EX v2EXManager;
 
+    public static void AutoLogin()
+    {
+        SharedPreferences sp = activity.getSharedPreferences("private",Context.MODE_PRIVATE);
+        String username = sp.getString("username",null);
+        String password = sp.getString("password",null);
+
+        if (username == null || password == null)
+            return;
+        v2EXManager.LoginSilence(username,password);
+    }
+
+    public static void SaveAccountInfo(String username,String password)
+    {
+        SharedPreferences sp = activity.getSharedPreferences("private", Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("username",username);
+        editor.putString("password",password);
+        editor.commit();
+    }
+
+    public static void ClearAccountInfo()
+    {
+        SharedPreferences sp = activity.getSharedPreferences("private",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.clear().commit();
+    }
 }

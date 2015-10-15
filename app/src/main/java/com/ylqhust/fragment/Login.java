@@ -25,6 +25,8 @@ public class Login extends Fragment implements View.OnClickListener ,V2EX.Update
     private EditText mPassword;
     private Button mButton;
 
+    private String u;
+    private String p;
     private ViewPagerAdapter.SetUserPage setUserPage;
     public void setSetUserPage(ViewPagerAdapter.SetUserPage setUserPage)
     {
@@ -80,6 +82,8 @@ public class Login extends Fragment implements View.OnClickListener ,V2EX.Update
             mPassword.setError("密码不能为空");
             return;
         }
+        u = username;
+        p = password;
         Global.v2EXManager.LoginBefore(username,password);
         Global.v2EXManager.setUpdateUserPage(this);
     }
@@ -96,6 +100,8 @@ public class Login extends Fragment implements View.OnClickListener ,V2EX.Update
         {
             Toast.makeText(getActivity(),"登陆成功",Toast.LENGTH_SHORT).show();
             Global.isLogin = true;
+            Global.ClearAccountInfo();
+            Global.SaveAccountInfo(u,p);
             setUserPage.setUserPage(string);
         }
     }

@@ -1,27 +1,28 @@
 package com.ylqhust.v2ex;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.TextHttpResponseHandler;
 import com.ylqhust.adapter.ArticleContentAdapter;
 import com.ylqhust.contract.ArticleInfo;
-import com.ylqhust.image.AsyncDrawable;
-import com.ylqhust.image.DownloadImageTask;
 import com.ylqhust.resolvehtml.ResolveOneArticle;
-import com.ylqhust.utils.ImageUtils;
 
-public class ShowArticleActivity extends AppCompatActivity implements ResolveOneArticle.UpdateUI{
+import cz.msebera.android.httpclient.Header;
+
+public class ShowArticleActivity extends AppCompatActivity implements ResolveOneArticle.UpdateUI,View.OnClickListener{
 
 
     private ListView listView;
@@ -66,6 +67,9 @@ public class ShowArticleActivity extends AppCompatActivity implements ResolveOne
         {
             button_reply.setVisibility(View.GONE);
             button_reply.setClickable(false);
+        }
+        else {
+            button_reply.setOnClickListener(this);
         }
     }
 
@@ -112,5 +116,43 @@ public class ShowArticleActivity extends AppCompatActivity implements ResolveOne
         articleInfo.setContent(contentWithImage);
         ArticleContentAdapter replyContentAdapter = new ArticleContentAdapter(articleInfo,getLayoutInflater());
         listView.setAdapter(replyContentAdapter);
+    }
+
+    @Override
+    public void onClick(View v) {
+        final int id = v.getId();
+
+        switch (id)
+        {
+            case R.id.article_content_floatbutton_reply:
+                final View view = LayoutInflater.from(this).inflate(R.layout.reply_edittext,null);
+                new AlertDialog.Builder(this).
+                        setTitle("输入回复信息").
+                        setView(view).
+                        setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                final EditText editText = (EditText) view.findViewById(R.id.reply_edittext_et);
+                                String content = editText.getText().toString();
+                                System.out.println("CONTENT:"+content);
+                                Global.v2EXManager.Reply(url, content, new TextHttpResponseHandler() {
+                                    @Override
+                                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                                        Toast.makeText(ShowArticleActivity.this,"回复过于频繁,请1800秒后再试",Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    @Override
+                                    public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                                        Toast.makeText(ShowArticleActivity.this,"回复成功",Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        }).
+                        setNegativeButton("取消",null).create().show();
+                break;
+            default:
+                break;
+        }
+
     }
 }

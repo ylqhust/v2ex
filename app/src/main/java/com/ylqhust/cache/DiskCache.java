@@ -22,6 +22,7 @@ public class DiskCache {
     private DiskCache()
     {
         root = new File(Environment.getExternalStorageDirectory(),SUB_DIR);
+        root.mkdir();
         fileMap = toMap(root.listFiles());
     }
 

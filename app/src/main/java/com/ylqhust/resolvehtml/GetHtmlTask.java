@@ -2,14 +2,18 @@ package com.ylqhust.resolvehtml;
 
 import android.os.AsyncTask;
 
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.ylqhust.v2ex.Global;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by apple on 15/10/1.
@@ -45,6 +49,26 @@ public class GetHtmlTask extends AsyncTask<String,Integer,String> {
     @Override
     protected String doInBackground(String... params) {
         urlString = params[0];
+        /**
+        try {
+            InputStream is = Global.v2EXManager.getHtmlString(urlString);
+            String htmlString = readInputStream(is);
+            is.close();
+            if (htmlString != null)
+            {
+                System.out.println("HTMLSTRING:"+htmlString);
+                //进行本地缓存
+                Global.diskCache.delete(urlString);
+                Global.diskCache.save(urlString,htmlString.getBytes());
+                return htmlString;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getLocalCacheHtml();
+        }
+        return null;
+         **/
+
         try {
             URL url = new URL(params[0]);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -54,6 +78,7 @@ public class GetHtmlTask extends AsyncTask<String,Integer,String> {
                 String htmlString = readInputStream(conn.getInputStream());
                 if (htmlString != null)
                 {
+                    System.out.println("HTMLSTRING:"+htmlString);
                     //进行本地缓存
                     Global.diskCache.delete(urlString);
                     Global.diskCache.save(urlString,htmlString.getBytes());
@@ -66,6 +91,7 @@ public class GetHtmlTask extends AsyncTask<String,Integer,String> {
             return getLocalCacheHtml();
         }
         return null;
+
     }
 
     @Override
@@ -89,6 +115,7 @@ public class GetHtmlTask extends AsyncTask<String,Integer,String> {
     }
 
     private String getLocalCacheHtml() {
+        System.out.println("GETLOCALCACHEHTML");
         File file = Global.diskCache.getFile(urlString);
         if (file == null)
             return null;

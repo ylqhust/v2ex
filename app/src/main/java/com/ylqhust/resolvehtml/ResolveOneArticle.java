@@ -1,7 +1,5 @@
 package com.ylqhust.resolvehtml;
 
-import android.util.Log;
-
 import com.ylqhust.contract.ArticleAndRepliesScheam;
 import com.ylqhust.contract.ArticleInfo;
 import com.ylqhust.contract.ReplyInfo;
@@ -18,8 +16,6 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by apple on 15/10/1.
@@ -87,7 +83,15 @@ public class ResolveOneArticle implements GetHtmlTask.DoAfter
         Document doc = Jsoup.parse(this.htmlString);
         Element wrapper = doc.getElementById(ArticleAndRepliesScheam.WRAPPER_ID);
 
-        Elements boxs = wrapper.getElementsByClass(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX_CLASS);
+        Elements boxs = null;
+        try
+        {
+            boxs = wrapper.getElementsByClass(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX_CLASS);
+        }
+        catch (Exception e)
+        {
+            this.updateUI.updateUI(null);
+        }
 
         Element box1 = null;
         Element box2 = null;
@@ -107,22 +111,30 @@ public class ResolveOneArticle implements GetHtmlTask.DoAfter
         }
 
         Element head = box1.getElementsByClass(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_CLASS).first();
-        Element head_fr = head.getElementsByClass(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_FR_CLASS).first();
-        //发帖人头像
-        String src = null;
-        if (head_fr == null)
+        try{
+            Element head_fr = head.getElementsByClass(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_FR_CLASS).first();
+            //发帖人头像
+            String src = null;
+            if (head_fr == null)
+            {
+                //表示无法获取主题
+                this.updateUI.updateUI(null);
+                return;
+            }
+
+            else
+            {
+                Element head_fr_avatar = head_fr.getElementsByClass(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_FR_AVATAR_CLASS).first();
+                src =  "http:"+head_fr_avatar.attr(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_FR_AVATAR_SRC_ATTR);
+            }
+            articleInfo.setAuthor_image(src);
+        }
+        catch (Exception e)
         {
-            //表示无法获取主题
+            e.printStackTrace();
             this.updateUI.updateUI(null);
-            return;
         }
 
-        else
-        {
-            Element head_fr_avatar = head_fr.getElementsByClass(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_FR_AVATAR_CLASS).first();
-            src =  "http:"+head_fr_avatar.attr(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_FR_AVATAR_SRC_ATTR);
-        }
-        articleInfo.setAuthor_image(src);
 
         //帖子分类
         Elements aElements = head.getElementsByTag(ArticleAndRepliesScheam.WRAPPER_MAIN_BOX1_HEADER_A_TAG);
@@ -224,7 +236,6 @@ public class ResolveOneArticle implements GetHtmlTask.DoAfter
     //解析url
     private void resolveUrl()
     {
-
         GetHtmlTask getHtmlTask = new GetHtmlTask();
         getHtmlTask.setDoAfter(this);
         getHtmlTask.execute(url);
@@ -278,4 +289,5 @@ public class ResolveOneArticle implements GetHtmlTask.DoAfter
     {
         this.updateUI = updateUI;
     }
+
 }

@@ -59,6 +59,7 @@ public class Account extends Fragment implements View.OnClickListener{
 
     private void loginOut() {
         Global.isLogin = false;
+        Global.ClearAccountInfo();
         Global.v2EXManager.setmClient();
         setUserPage.setUserPage(null);
     }
