@@ -1,5 +1,6 @@
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginRight="4dp"
@@ -38,11 +39,13 @@
         android:layout_toLeftOf="@+id/user_image"
         android:layout_marginRight="8dp"
         />
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/user_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_alignParentRight="true"
+        app:border_width="2dp"
+        app:border_color="#FFFFFFFF"
         android:src="@drawable/ic_warning_black_24dp"
         />
     </RelativeLayout>
