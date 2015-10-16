@@ -20,13 +20,15 @@ import java.util.List;
 /**
  * Created by apple on 15/10/1.
  */
+
+@Deprecated
 public class ResolveOneArticle implements GetHtmlTask.DoAfter
 {
     private String url = null;
     private InputStream is = null;
     private File file = null;
     private String htmlString = null;
-    private UpdateUI updateUI = null;
+    private UpdateUI<ArticleInfo> updateUI = null;
     public ResolveOneArticle(String url, String noneed)
     {
         this.url = url;
@@ -280,12 +282,7 @@ public class ResolveOneArticle implements GetHtmlTask.DoAfter
         resolveHtmlString();
     }
 
-
-    public interface UpdateUI{
-        public void updateUI(ArticleInfo articleInfo);
-    }
-
-    public void setUpdateUI(UpdateUI updateUI)
+    public void setUpdateUI(UpdateUI<ArticleInfo> updateUI)
     {
         this.updateUI = updateUI;
     }

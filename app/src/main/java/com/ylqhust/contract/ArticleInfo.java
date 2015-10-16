@@ -12,6 +12,8 @@ public class ArticleInfo {
     private String author_image;
     //帖子分类信息
     private List<String> article_class;
+
+    public String class_tag = "V2EX";
     //帖子标题
     private String title;
     //帖子创建信息
@@ -79,11 +81,15 @@ public class ArticleInfo {
     }
 
     public void setReply_base_info(String reply_base_info) {
+        if (reply_base_info == null)
+            return;
         this.reply_base_info = reply_base_info;
     }
 
+    /**
     public String getArticle_Tag()
     {
+        /**
         if (this.article_class == null)
             return "";
         StringBuilder sb = new StringBuilder();
@@ -94,6 +100,11 @@ public class ArticleInfo {
         }
         sb.append(article_class.get(i));
         return sb.toString();
+    }
+    **/
+    public String getArticle_Tag()
+    {
+        return class_tag;
     }
 
 }

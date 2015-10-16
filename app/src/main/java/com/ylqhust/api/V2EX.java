@@ -263,15 +263,21 @@ public class V2EX {
         });
     }
 
-    public InputStream getHtmlString(String url) throws IOException {
+    public InputStream getHtmlIS(String url) throws IOException {
         HttpClient client = HttpClients.createDefault();
         HttpGet get = new HttpGet(url);
         get.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-        get.addHeader("Accept-Encoding","gzip, deflate");
+        get.addHeader("Accept-Encoding", "gzip, deflate");
         get.addHeader("Accept-Language", "en-US,en;q=0.5");
         get.addHeader("Host", "www.v2ex.com");
-        get.addHeader("User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:40.0) Gecko/20100101 Firefox/40.0");
+        get.addHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:40.0) Gecko/20100101 Firefox/40.0");
         HttpResponse response = client.execute(get);
         return response.getEntity().getContent();
+    }
+
+    public void SolveUrlGet(String url,TextHttpResponseHandler handler)
+    {
+        AsyncHttpClient client = getClient();
+        client.get(url,handler);
     }
 }

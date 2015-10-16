@@ -3,6 +3,7 @@ package com.ylqhust.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -110,6 +111,7 @@ public class ArticleContentAdapter extends BaseAdapter {
             //设置view
             replyer_name.setText(replyInfos.get(position).getReply_name());
             this_reply_base_info.setText(replyInfos.get(position).getReply_time());
+
             this_reply_content.setText(replyInfos.get(position).getReply_content());
             no.setText(replyInfos.get(position).getReply_number());
 

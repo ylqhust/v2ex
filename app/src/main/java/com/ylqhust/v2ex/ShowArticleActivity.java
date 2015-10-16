@@ -18,11 +18,12 @@ import android.widget.Toast;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.ylqhust.adapter.ArticleContentAdapter;
 import com.ylqhust.contract.ArticleInfo;
-import com.ylqhust.resolvehtml.ResolveOneArticle;
+import com.ylqhust.resolvehtml.ResolveOneArticleS;
+import com.ylqhust.resolvehtml.UpdateUI;
 
 import cz.msebera.android.httpclient.Header;
 
-public class ShowArticleActivity extends AppCompatActivity implements ResolveOneArticle.UpdateUI,View.OnClickListener{
+public class ShowArticleActivity extends AppCompatActivity implements UpdateUI<ArticleInfo>,View.OnClickListener{
 
 
     private ListView listView;
@@ -54,9 +55,14 @@ public class ShowArticleActivity extends AppCompatActivity implements ResolveOne
     }
 
     private void initArticleContent() {
+        ResolveOneArticleS resolveOneArticleS = new ResolveOneArticleS(url);
+        resolveOneArticleS.setUpdateUI(this);
+        resolveOneArticleS.resolve();
+        /**
         ResolveOneArticle resolveOneArticle = new ResolveOneArticle(url,null);
         resolveOneArticle.setUpdateUI(this);
         resolveOneArticle.resolve();
+         **/
     }
 
     private void initView() {
@@ -114,6 +120,8 @@ public class ShowArticleActivity extends AppCompatActivity implements ResolveOne
         }
         //设置数据
         articleInfo.setContent(contentWithImage);
+        articleInfo.setAuthor_image(head_image_url);
+        articleInfo.setTitle(title_);
         ArticleContentAdapter replyContentAdapter = new ArticleContentAdapter(articleInfo,getLayoutInflater());
         listView.setAdapter(replyContentAdapter);
     }
@@ -144,6 +152,7 @@ public class ShowArticleActivity extends AppCompatActivity implements ResolveOne
                                     @Override
                                     public void onSuccess(int statusCode, Header[] headers, String responseString) {
                                         Toast.makeText(ShowArticleActivity.this,"回复成功",Toast.LENGTH_SHORT).show();
+                                        initArticleContent();
                                     }
                                 });
                             }

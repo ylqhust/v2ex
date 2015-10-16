@@ -24,7 +24,7 @@
                     android:hint="用户名"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:text="ylqhust"/>
+                    android:text=""/>
 
             </android.support.design.widget.TextInputLayout>
 
@@ -43,7 +43,7 @@
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:text="ylqylqhust"/>
+                    android:text=""/>
 
             </android.support.design.widget.TextInputLayout>
 

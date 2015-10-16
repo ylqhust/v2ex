@@ -4,9 +4,13 @@ import android.os.Environment;
 
 import com.ylqhust.utils.MD5;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 
 /**
@@ -47,6 +51,26 @@ public class DiskCache {
             return fileMap.get(md5);
         }
         return null;
+    }
+
+    public String getString(String key) throws Exception {
+        File file = getFile(key);
+        if (file == null)
+            return null;
+        return readInputStream(new FileInputStream(file));
+    }
+
+    private String readInputStream(InputStream instream) throws Exception
+    {
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        byte[]  buffer = new byte[1204];
+        int len = 0;
+        while ((len = instream.read(buffer)) != -1)
+        {
+            outStream.write(buffer,0,len);
+        }
+        instream.close();
+        return new String(outStream.toByteArray());
     }
 
     //根据文件名删除文件

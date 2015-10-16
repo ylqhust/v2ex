@@ -2,18 +2,14 @@ package com.ylqhust.resolvehtml;
 
 import android.os.AsyncTask;
 
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.ylqhust.v2ex.Global;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by apple on 15/10/1.
