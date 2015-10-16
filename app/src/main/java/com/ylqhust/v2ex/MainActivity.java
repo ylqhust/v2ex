@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -51,12 +52,13 @@ public class MainActivity extends AppCompatActivity implements AutoComplete.Auto
     private ImageView search_image;
     private List<View> lists;
     private LayoutInflater inflater;
+
     final private FragmentManager fm = getSupportFragmentManager();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
         initGlobal();
 
         viewpager = (ViewPager) findViewById(R.id.viewpager);

@@ -91,6 +91,7 @@ public class ResolveOneArticleS extends TextHttpResponseHandler
 
     public void resolve()
     {
+        Global.progressDialogSpinner2.show();
         Global.v2EXManager.SolveUrlGet(url,this);
     }
 

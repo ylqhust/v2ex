@@ -46,6 +46,7 @@ public class ShowArticleActivity extends AppCompatActivity implements UpdateUI<A
         initArticleContent();
     }
 
+
     private void initGlobal()
     {
         Global.progressDialogSpinner2 = new ProgressDialog(this);

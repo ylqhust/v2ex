@@ -85,7 +85,14 @@ public class LatestListViewAdapter extends BaseAdapter implements View.OnClickLi
         int delt = (int)(currentTime/1000 - createdTime)/60;
         time.setText("发表于"+delt+"分钟前");
         //为了避免setText直接去string.xml找id，添加一个+“”
-        replies.setText(latestScheam.getReplies()+"");
+        if (latestScheam.getReplies() == 0)
+        {
+            replies.setVisibility(View.GONE);
+        }
+        else
+        {
+            replies.setText(latestScheam.getReplies()+"");
+        }
         return view;
     }
 

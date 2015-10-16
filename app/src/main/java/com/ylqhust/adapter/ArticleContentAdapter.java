@@ -15,6 +15,7 @@ import com.ylqhust.contract.ReplyInfo;
 import com.ylqhust.image.AsyncDrawable;
 import com.ylqhust.image.DownloadImageTask;
 import com.ylqhust.utils.ImageUtils;
+import com.ylqhust.v2ex.Global;
 import com.ylqhust.v2ex.R;
 
 
@@ -93,6 +94,7 @@ public class ArticleContentAdapter extends BaseAdapter {
                 downloadImageTask.execute(image_url,"100","100");//100,100代表尺寸
             }
 
+            Global.progressDialogSpinner2.dismiss();
 
             return view;
         }
